@@ -183,7 +183,8 @@ z=r\cos(\theta)
 \end{matrix}
 $$
 
-这个雅克比矩阵写起来很麻烦，直接得到结果:$J_T=r^2\sin(\theta)|$
+这个雅克比矩阵写起来很麻烦，直接得到结果:
+$J_T=r^2\sin(\theta)|$
 
 因此对应的转换关系为：
 $$p(r,\theta,\phi)=r^2\sin(\theta)p(x,y,z)$$
