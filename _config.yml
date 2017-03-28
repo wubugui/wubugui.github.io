@@ -1,11 +1,12 @@
 # Site wide configuration
 
-title: Site Title
-locale: en_US
-description: Describe your website here.
-logo: site-logo.png
+title: KO∏∑KO
+locale: en_EN
+description: 
+logo: 5128941.jpg
 search: true
 url: https://wubugui.github.io/
+#url : http://127.0.0.1:4000/
 
 # Jekyll configuration
 
@@ -36,13 +37,13 @@ exclude: ["lib", "config.rb", "Capfile", "config", "log", "Rakefile", "Rakefile.
 
 # Site owner
 owner:
-  name: Your Name
+  name: Danny Teng
   avatar: bio-photo.jpg
-  email: you@email.com
+  email: wubuguiqazwsx@126.com
   disqus-shortname:
   twitter: #username
   facebook: #username
-  github: #username
+  github: wubugui
   stackexchange: #http://stackoverflow.com/users/123456/username
   linkedin: #username
   instagram: #username
