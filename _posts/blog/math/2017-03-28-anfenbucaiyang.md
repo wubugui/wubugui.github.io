@@ -121,7 +121,20 @@ $$\frac{p(x)}{g(y)}\approx \frac{|\Delta y|}{|\Delta x|}$$
 当$|\Delta x| \rightarrow 0$时：
 $$\frac{p(x)}{g(y)}= |t'(x)|=|\frac{dy}{dx}|$$
 
-为了求得函数t，注意：
+为了求得函数t，现在有微分方程$p(x)=g(y)|\frac{dy}{dx}|$
+为了解开绝对值，分类讨论：
+-	当$\frac{dy}{dx} \le 0$时
+	$$-p(x)dx=g(y)dy$$
+	两端对x做变上限定积分
+	$$-\int_0^x p(x)dx = \int_0^x g(y)dy \rightarrow$$
+	根据牛顿莱布尼兹公式算定积分有：
+	$$-P(x)|_0^x = G(y)|_0^x = G(t(x))-G(t(0))$$
+	由于函数$y=t(x)$是单调递减的，又x、y 都在[0,1]，于是$t(0)=1$，所以：
+	$$P(x)=1-G(y)$$
+-	当大于0是，类似地，有$$P(x)=G(y)$$
+
+
+另外，注意有另外一种更一般的方法：
 $$P(y)=Pr{Y<=y}=Pr{t(X)<=y}$$
 当t单调递增时，上式等于：
 $$Pr{X<=f(y)}=G(f(y)) \rightarrow y = P^{-1}[G(x)]$$
