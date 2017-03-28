@@ -114,7 +114,7 @@ void check2d(std::vector<ofVec2f>& v,GridCanvasPanel3D* grid_3d)
 
 
 两个分布之间的采样要相互转化，可设他们之间的关系：
-设y(满足分布$p(y)$)和x(满足分布g(x))之间有关系
+设y(满足分布$p(x)$)和x(满足分布$g(y))$之间有关系
 $y=f^{-1}(x)=t(x)$x,y均在[0,1],且函数单调，必须要求两个分布下的采样**等概率**，设在两个pdf定义域上有两个极小的区间$|\Delta x|/\|\Delta y|$，于是通过对函数t求导同时注意建立等概率关系不能为负值，就有$|\Delta x| |t'(x)|\approx|\Delta y|$，即有：
 $$p(x)|\Delta x| \approx g(y)|\Delta y|$$
 $$\frac{p(x)}{g(y)}\approx \frac{|\Delta y|}{|\Delta x|}$$
@@ -135,11 +135,11 @@ $$\frac{p(x)}{g(y)}= |t'(x)|=|\frac{dy}{dx}|$$
 
 
 另外，注意有另外一种更一般的方法：
-$$P(y)=Pr{Y<=y}=Pr{t(X)<=y}$$
+$$P(x)=Pr{X<=x}=Pr{t(X)<=x}$$
 当t单调递增时，上式等于：
-$$Pr{X<=f(y)}=G(f(y)) \rightarrow y = P^{-1}[G(x)]$$
+$$Pr{Y<=t^{-1}(y)}=G(t^{-1}(y)) \rightarrow y = G^{-1}[P(x)]$$
 单调递减时，上式为：
-$$Pr{X>=f(y)}=1-G(f(y)) \rightarrow y = P^{-1}[1-G(x)]$$
+$$Pr{Y>=t^{-1}(y)}=1-G(t^{-1}(y)) \rightarrow y = G^{-1}[1-P(x)]$$
 
 
 >可参考：http://math.arizona.edu/~jwatkins/f-transform.pdf
