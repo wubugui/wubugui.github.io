@@ -30,3 +30,7 @@ Here is an example MathJax inline rendering \\( 1/x^{2} \\), and here is a block
 \\[ \frac{1}{n^{2}} \\]
 
 The only thing to look out for is the escaping of the backslash when using markdown, so the delimiters become `\\[ ... \\]` and `\\( ... \\)` for inline and block maths respectively.
+
+$\int_0^{\sum_{1=0}^123} \frac{1}{2}$
+
+$$\int_0^{\sum_{1=0}^123} \frac{1}{2}$$
