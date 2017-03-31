@@ -719,8 +719,13 @@ It is not possible for the cost function to sometimes increase.If so,bug must be
 数据维度压缩：将冗余数据降维，通俗的说是把n维数据，投影到n-1维超平面上。**另外，有时候为了可视化数据和更好的理解，可能需要将数据降维到2D或者3D。**
 
 
-## 数据分析
+## 主成分分析（PCA）
 
+之前有一篇文章转载过主成分分析，预先做了一些了解，见：[PCA算法](https://wubugui.github.io//blog/jiqixuexizaji/)
+
+简单地说，PCA将会找一个最合适的超平面，将所有数据投影上去，达到降低数据维度的目的。
+
+线性回归和PCA有差别，线性回归最小化的是**函数值的距离**，而PCA是值到**超平面的距离**。
 
 
 
