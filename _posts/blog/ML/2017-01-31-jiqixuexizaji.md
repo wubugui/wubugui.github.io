@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "机器学习初步"
+title: "机器学习杂项"
 modified:
 categories: blog
 excerpt:
