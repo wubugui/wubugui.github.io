@@ -760,6 +760,10 @@ $$1-\frac{\sum_{i=1}^k S_{ii}}{\sum_{i=1}^n S_{ii}} = \frac{\frac{1}{m}\sum_{i=1
 
 所以在计算的时候只需要计算一次svd分，使用不同的k计算$1-\frac{\sum_{i=1}^k S_{ii}}{\sum_{i=1}^n S_{ii}}$就可以了。
 
+### 应用PCA的建议
+
+
+
 
 # Ref
 -  [https://www.coursera.org/learn/machine-learning](https://www.coursera.org/learn/machine-learning)
