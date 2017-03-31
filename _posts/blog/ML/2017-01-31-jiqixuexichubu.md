@@ -653,6 +653,41 @@ n=number of features,m=number of training examples
 
 -   神经网络可能对所有上述设定都工作的良好，但是可能会更慢。
 
+# 无监督学习
+
+## K-means算法
+
+概述：
+
+先给k个cluster中心，然后寻找距离中心最近的数据，把这些数据平均后，得到新的cluster中心，再将对应的那个cluter中心移动到新得到的clusetr中心，重复上述过程直到最后cluster中心收敛不动。
+
+算法流程：
+
+-	随机初始化K cluster中心$\mu_1,\mu_2,...,\mu_K \in \mathbb{R}^n $
+-	循环直到所有的cluster中心不动
+	-	for i= 1 to m
+			-  $c^{(i)}$:=index(from 1 to K) of cluster centroid closest to $x^{(i)}$
+		for k = 1 to K
+			-  \mu_k:=average (mean) of points assigned to cluster $k$
+
+其中第一个循环叫做cluster assignment ：
+
+$c^{(i)}$：训练example $x^{(i)}$所属的cluster（1,2,3，...,K）索引。
+$\mu_k$：第k个cluster中心。
+$\mu_{c^{(i)}}$：example $x^{(i)}$所属的cluster。
+
+优化目标：
+
+```mathjax!
+$$J(c^{(1)},...,c^{(m)},\mu_1,...,\mu_K)=\frac{1}{m}\sum_{i=1}^m||x^{(i)}-\mu_{c^{(i)}}||^2$$
+
+$$\min_{c^{(1)},...,c^{(m)},\mu_1,...,\mu_K}{J(c^{(1)},...,c^{(m)},\mu_1,...,\mu_K)}$$
+```
+It is not possible for the cost function to sometimes increase.If so,bug must be in the code.
+
+第二部叫做move centroid
+
+
 
 
 # Ref
