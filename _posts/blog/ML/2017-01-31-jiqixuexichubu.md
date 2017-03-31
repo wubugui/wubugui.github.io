@@ -668,7 +668,7 @@ n=number of features,m=number of training examples
 	-	for i= 1 to m
 			-  $c^{(i)}$:=index(from 1 to K) of cluster centroid closest to $x^{(i)}$
 		for k = 1 to K
-			-  \mu_k:=average (mean) of points assigned to cluster $k$
+			-  $\mu_k$:=average (mean) of points assigned to cluster $k$
 
 其中第一个循环叫做cluster assignment ：
 
@@ -715,6 +715,14 @@ It is not possible for the cost function to sometimes increase.If so,bug must be
 值得一说的是，上图如果需要增长点，则可能说明增长点找到了一个局部最优值，需要重新使用多次随机初始化来得到最优的结果。
 
 **有时候，应用目的可能帮助你选择K值。比如生产T恤，决定SML三个型号的大小。**
+
+数据维度压缩：将冗余数据降维，通俗的说是把n维数据，投影到n-1维超平面上。**另外，有时候为了可视化数据和更好的理解，可能需要将数据降维到2D或者3D。**
+
+
+## 数据分析
+
+
+
 
 
 
