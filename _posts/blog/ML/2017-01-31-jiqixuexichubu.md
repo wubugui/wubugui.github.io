@@ -721,14 +721,44 @@ It is not possible for the cost function to sometimes increase.If so,bug must be
 
 ## 主成分分析（PCA）
 
-之前有一篇文章转载过主成分分析，预先做了一些了解，见：[PCA算法](https://wubugui.github.io//blog/jiqixuexizaji/)
 
-简单地说，PCA将会找一个最合适的超平面，将所有数据投影上去，达到降低数据维度的目的。
+简单地说，PCA将会找一个最合适的超平面（或者更低的维度），将所有数据投影上去，达到降低数据维度的目的。
 
-线性回归和PCA有差别，线性回归最小化的是**函数值的距离**，而PCA是值到**超平面的距离**。
-
+线性回归和PCA有差别，线性回归最小化的是**函数值的距离**，而PCA是值到**超平面（或更低维度）的距离**。
 
 
+借助函数库PCA的过程非常简单：
+-	预处理数据：减去所有数据的均值，如果不同的feature具有不同的范围，则缩放到可比较的范围。
+-	计算协方差矩阵$\Sigma = \frac{1}{m}\sum_{i=1}^n(x^{(i)})(x^{(i)})^T$,计算协方差矩阵的特征向量，可使用`[U,~,~]=svd(Sigma);`.
+-	取特征向量前k列，乘到X上得到结果矩阵。`Ureduce = U(:,1:k);z=Ureduce'*X;`
+
+具体的数学推到参考[PCA算法](https://wubugui.github.io//blog/jiqixuexizaji/).
+
+如果要重建原始数据，就使用这个矩阵将结果转换回去，但是不会得到精确值，因为在压缩的时候已经丢失了数据。但对于降维数据，本来就十分接近超平面，还原值几乎是相等的。
+
+### 选择reduce的目标k值
+
+一般选择k的目标是选择让以下式子最小的k：
+
+$$\frac{\frac{1}{m}\sum_{i=1}^m||x^{(i)}-x_{approx}^{(i)}||^2}{\frac{1}{m}\sum_{i=1}^m||x^{(i)}||^2}$$
+
+一般使得：
+
+$$\frac{\frac{1}{m}\sum_{i=1}^m || x^{(i)} - x_{approx}^{(i)}||^2}{\frac{1}{m}\sum_{i=1}^m||x^{(i)}||^2} \le 0.01$$
+
+如此保留了99%的差异性（retained variance）。
+
+可以使用以下算法达到目标：
+
+-	使用k=1,2,3,4,5...计算PCA
+-	计算$U_{reduce},z^{(1)},z^{(2)},...,z^{(m)},x_{approx}^{(1)},...,x_{approx}^{(m)}$
+-	测试结果是否满足目标
+
+实际上，使用奇异值分解(`[U,S,V]=svd(sigma);`)后，得到的S是一个对角矩阵（S_{ii}）为对角元素，而对角元素和目标有如下关系：
+
+$$1-\frac{\sum_{i=1}^k S_{ii}}{\sum_{i=1}^n S_{ii}} = \frac{\frac{1}{m}\sum_{i=1}^m || x^{(i)} - x_{approx}^{(i)}||^2}{\frac{1}{m}\sum_{i=1}^m||x^{(i)}||^2}$$
+
+所以在计算的时候只需要计算一次svd分，使用不同的k计算$1-\frac{\sum_{i=1}^k S_{ii}}{\sum_{i=1}^n S_{ii}}$就可以了。
 
 
 # Ref
