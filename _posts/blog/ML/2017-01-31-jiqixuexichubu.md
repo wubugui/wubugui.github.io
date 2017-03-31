@@ -676,17 +676,45 @@ $c^{(i)}$：训练example $x^{(i)}$所属的cluster（1,2,3，...,K）索引。
 $\mu_k$：第k个cluster中心。
 $\mu_{c^{(i)}}$：example $x^{(i)}$所属的cluster。
 
-优化目标：
+核心优化目标：
 
-```mathjax!
+
 $$J(c^{(1)},...,c^{(m)},\mu_1,...,\mu_K)=\frac{1}{m}\sum_{i=1}^m||x^{(i)}-\mu_{c^{(i)}}||^2$$
 
 $$\min_{c^{(1)},...,c^{(m)},\mu_1,...,\mu_K}{J(c^{(1)},...,c^{(m)},\mu_1,...,\mu_K)}$$
-```
+
+
 It is not possible for the cost function to sometimes increase.If so,bug must be in the code.
 
-第二部叫做move centroid
+第二部叫做move centroid.
 
+### 初始化K
+
+-	K应该小于m（训练数据量）
+-	从训练数据中随机选择K
+
+### 局部最优
+
+为了避免得到局部最优解，可以尝试跑50到100次下列算法：
+
+>
+-	随机初始化K
+-	运行K-means算法，得到优化后的$c$和$\mu$
+-	计算cost函数
+
+最后选择使得cost函数最小的那一组$c,\mu$作为结果。
+
+### 选择cluster的数目
+
+肘部法则，下图：
+
+![select_K](https://github.com/wubugui/FXXKTracer/raw/master/pic/ml_select_K.png)
+
+但是第二张图选择将会遇到一些困难。
+
+值得一说的是，上图如果需要增长点，则可能说明增长点找到了一个局部最优值，需要重新使用多次随机初始化来得到最优的结果。
+
+**有时候，应用目的可能帮助你选择K值。比如生产T恤，决定SML三个型号的大小。**
 
 
 
