@@ -716,6 +716,205 @@ It is not possible for the cost function to sometimes increase.If so,bug must be
 
 **有时候，应用目的可能帮助你选择K值。比如生产T恤，决定SML三个型号的大小。**
 
+### 应用
+
+K-mean可以将数据归类为更少的类别，也能用于数据压缩。比如，将一个真彩色图片压缩为一张16色图片。
+
+### 实现
+
+```matlab
+function centroids = computeCentroids(X, idx, K)
+%COMPUTECENTROIDS returns the new centroids by computing the means of the 
+%data points assigned to each centroid.
+%   centroids = COMPUTECENTROIDS(X, idx, K) returns the new centroids by 
+%   computing the means of the data points assigned to each centroid. It is
+%   given a dataset X where each row is a single data point, a vector
+%   idx of centroid assignments (i.e. each entry in range [1..K]) for each
+%   example, and K, the number of centroids. You should return a matrix
+%   centroids, where each row of centroids is the mean of the data points
+%   assigned to it.
+%
+
+% Useful variables
+[m n] = size(X);
+
+% You need to return the following variables correctly.
+centroids = zeros(K, n);
+
+
+% ====================== YOUR CODE HERE ======================
+% Instructions: Go over every centroid and compute mean of all points that
+%               belong to it. Concretely, the row vector centroids(i, :)
+%               should contain the mean of the data points assigned to
+%               centroid i.
+%
+% Note: You can use a for-loop over the centroids to compute this.
+%
+
+for k=1:K
+    s = [0,0];
+    n = 0;
+    for i=1:m
+        index = idx(i,:);
+        if index==k
+            centroids(k,:) = centroids(k,:) + X(i,:);
+            n = n + 1;
+        end
+    end
+    centroids(k,:) = centroids(k,:)/(n);
+end
+
+
+
+% =============================================================
+
+
+end
+
+
+function centroids = kMeansInitCentroids(X, K)
+%KMEANSINITCENTROIDS This function initializes K centroids that are to be 
+%used in K-Means on the dataset X
+%   centroids = KMEANSINITCENTROIDS(X, K) returns K initial centroids to be
+%   used with the K-Means on the dataset X
+%
+
+% You should return this values correctly
+centroids = zeros(K, size(X, 2));
+
+% ====================== YOUR CODE HERE ======================
+% Instructions: You should set centroids to randomly chosen examples from
+%               the dataset X
+%
+
+
+randidx = randperm(size(X, 1));
+
+centroids = X(randidx(1:K), :);
+
+
+
+
+% =============================================================
+
+end
+
+
+function idx = findClosestCentroids(X, centroids)
+%FINDCLOSESTCENTROIDS computes the centroid memberships for every example
+%   idx = FINDCLOSESTCENTROIDS (X, centroids) returns the closest centroids
+%   in idx for a dataset X where each row is a single example. idx = m x 1 
+%   vector of centroid assignments (i.e. each entry in range [1..K])
+%
+
+% Set K
+K = size(centroids, 1);
+
+% You need to return the following variables correctly.
+idx = zeros(size(X,1), 1);
+
+% ====================== YOUR CODE HERE ======================
+% Instructions: Go over every example, find its closest centroid, and store
+%               the index inside idx at the appropriate location.
+%               Concretely, idx(i) should contain the index of the centroid
+%               closest to example i. Hence, it should be a value in the 
+%               range 1..K
+%
+% Note: You can use a for-loop over the examples to compute this.
+%
+
+
+m = size(X,1);
+for i = 1:m
+    min_v = 99999;
+    min_index = 0;
+    for k=1:K
+        A = X(i,:)-centroids(k,:);
+        t = A*A';
+        if t<min_v
+            min_v = t;
+            min_index = k;
+        end
+    end
+    idx(i)=min_index;
+end
+
+
+% =============================================================
+
+end
+
+
+
+function [centroids, idx] = runkMeans(X, initial_centroids, ...
+                                      max_iters, plot_progress)
+%RUNKMEANS runs the K-Means algorithm on data matrix X, where each row of X
+%is a single example
+%   [centroids, idx] = RUNKMEANS(X, initial_centroids, max_iters, ...
+%   plot_progress) runs the K-Means algorithm on data matrix X, where each 
+%   row of X is a single example. It uses initial_centroids used as the
+%   initial centroids. max_iters specifies the total number of interactions 
+%   of K-Means to execute. plot_progress is a true/false flag that 
+%   indicates if the function should also plot its progress as the 
+%   learning happens. This is set to false by default. runkMeans returns 
+%   centroids, a Kxn matrix of the computed centroids and idx, a m x 1 
+%   vector of centroid assignments (i.e. each entry in range [1..K])
+%
+
+% Set default value for plot progress
+if ~exist('plot_progress', 'var') || isempty(plot_progress)
+    plot_progress = false;
+end
+
+% Plot the data if we are plotting progress
+if plot_progress
+    figure;
+    hold on;
+end
+
+% Initialize values
+[m n] = size(X);
+K = size(initial_centroids, 1);
+centroids = initial_centroids;
+previous_centroids = centroids;
+idx = zeros(m, 1);
+
+% Run K-Means
+for i=1:max_iters
+    
+    % Output progress
+    fprintf('K-Means iteration %d/%d...\n', i, max_iters);
+    if exist('OCTAVE_VERSION')
+        fflush(stdout);
+    end
+    
+    % For each example in X, assign it to the closest centroid
+    idx = findClosestCentroids(X, centroids);
+    
+    % Optionally, plot progress here
+    if plot_progress
+        plotProgresskMeans(X, centroids, previous_centroids, idx, K, i);
+        previous_centroids = centroids;
+        fprintf('Press enter to continue.\n');
+        pause;
+    end
+    
+    % Given the memberships, compute new centroids
+    centroids = computeCentroids(X, idx, K);
+end
+
+% Hold off if we are plotting progress
+if plot_progress
+    hold off;
+end
+
+end
+
+
+
+```
+
+
 数据维度压缩：将冗余数据降维，通俗的说是把n维数据，投影到n-1维超平面上。**另外，有时候为了可视化数据和更好的理解，可能需要将数据降维到2D或者3D。**
 
 
@@ -762,7 +961,102 @@ $$1-\frac{\sum_{i=1}^k S_{ii}}{\sum_{i=1}^n S_{ii}} = \frac{\frac{1}{m}\sum_{i=1
 
 ### 应用PCA的建议
 
+PCA可以用来减少feature加速训练效率，但是使用PCA来减少feature以避免过拟合**不是**一个好主意。
 
+### 实现
+
+```matlab
+function [U, S] = pca(X)
+%PCA Run principal component analysis on the dataset X
+%   [U, S, X] = pca(X) computes eigenvectors of the covariance matrix of X
+%   Returns the eigenvectors U, the eigenvalues (on diagonal) in S
+%
+
+% Useful values
+[m, n] = size(X);
+
+% You need to return the following variables correctly.
+U = zeros(n);
+S = zeros(n);
+
+% ====================== YOUR CODE HERE ======================
+% Instructions: You should first compute the covariance matrix. Then, you
+%               should use the "svd" function to compute the eigenvectors
+%               and eigenvalues of the covariance matrix. 
+%
+% Note: When computing the covariance matrix, remember to divide by m (the
+%       number of examples).
+%
+
+
+
+Sigma = X'*X./m;
+[U,S,~] = svd(Sigma);
+
+
+% =========================================================================
+
+end
+
+function Z = projectData(X, U, K)
+%PROJECTDATA Computes the reduced data representation when projecting only 
+%on to the top k eigenvectors
+%   Z = projectData(X, U, K) computes the projection of 
+%   the normalized inputs X into the reduced dimensional space spanned by
+%   the first K columns of U. It returns the projected examples in Z.
+%
+
+% You need to return the following variables correctly.
+Z = zeros(size(X, 1), K);
+
+% ====================== YOUR CODE HERE ======================
+% Instructions: Compute the projection of the data using only the top K 
+%               eigenvectors in U (first K columns). 
+%               For the i-th example X(i,:), the projection on to the k-th 
+%               eigenvector is given as follows:
+%                    x = X(i, :)';
+%                    projection_k = x' * U(:, k);
+%
+
+%n*n
+U_reduce = U(:,1:K);
+%n*k
+Z = X*U_reduce;
+
+
+% =============================================================
+
+end
+
+function X_rec = recoverData(Z, U, K)
+%RECOVERDATA Recovers an approximation of the original data when using the 
+%projected data
+%   X_rec = RECOVERDATA(Z, U, K) recovers an approximation the 
+%   original data that has been reduced to K dimensions. It returns the
+%   approximate reconstruction in X_rec.
+%
+
+% You need to return the following variables correctly.
+X_rec = zeros(size(Z, 1), size(U, 1));
+
+% ====================== YOUR CODE HERE ======================
+% Instructions: Compute the approximation of the data by projecting back
+%               onto the original space using the top K eigenvectors in U.
+%
+%               For the i-th example Z(i,:), the (approximate)
+%               recovered data for dimension j is given as follows:
+%                    v = Z(i, :)';
+%                    recovered_j = v' * U(j, 1:K)';
+%
+%               Notice that U(j, 1:K) is a row vector.
+%               
+
+X_rec = Z*U(:,1:K)';
+
+% =============================================================
+
+end
+```
 
 
 # Ref
