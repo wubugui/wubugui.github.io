@@ -643,6 +643,9 @@ OLPBRItersc *isc, const std::vector<OLPBRGeometry*>& prims)
 
 使用一个后期处理可以很简单地构建“Rope”，同时使用一个优化函数，将“Rope” push到最小的子树上去。
 
+...
+
+当ray表现出一些公共属性时，某些计算仅需要做一次，就可以在所有ray之间共享。这通常会用在同原点的ray相交测试primitive上。这时候可以将这些点使用SIMD同时遍历kdtree，算法上基本和单个ray遍历是一样的，但是要使用mask来屏蔽那些不需要结算的ray，注意这种方案在靠近root的地方很有效，会随着越来越远离root节点越来越分散而丢失其优点，在这种方案下必须所有的ray都找到交点后才能退出。
 
 
 
