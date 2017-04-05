@@ -44,7 +44,7 @@ kdtree可以使得ray tracing复杂度从$O(n)$减少到$O(logn)$.加速比率�
 
 # 构建KD-Tree
 
-自顶向下递归构建kdtree的算法复杂度为$O(nlogn)$($n+\frac{n}{2}+\frac{n}{2}+4* \frac{n}{4}$+..+n \frac{n}{n}).
+自顶向下递归构建kdtree的算法复杂度为$O(nlogn)$($n+\frac{n}{2}+\frac{n}{2}+4* \frac{n}{4}+..+n*\frac{n}{n}$).
 
 具体算法参考：
 ```cpp
