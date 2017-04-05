@@ -652,7 +652,8 @@ Rope等待实现...
 
 # 动态场景
 
-kdtree对于动态场景一般是重建。可以考虑使用采样SAH和binning of primitives[3] 来提升重建效率。
+kdtree对于动态场景一般是重建。可以考虑使用采样SAH和binning of primitives[3] 来提升重建效率。另外还有一种“fuzzy kdtree”[4]，允许primitive有限制地运动。
+还有就是分层次的kdtree，首先是以primitive集为单位分离地构建bottom-level kdtree并储存变换矩阵，然后再以这些primitive集构建一个top-level kdtree。遍历的时候达到叶节点就进入bottom-level kdtree，将ray使用矩阵转换进去，然后继续遍历，这种方案仅支持层次动画。
 
 # 参考文献
 
@@ -667,3 +668,7 @@ rographics symposium on Graphics hardware, pages 67–77. ACM, 2006.
 [3] S. Popov, J. Günther, H.-P. Seidel, and P. Slusallek. Experiences with streaming con-
 struction of SAH KD-trees. In Proceedings of the 2006 IEEE Symposium on Interac-
 tive Ray Tracing, pages 89–94. IEEE, 2006.
+
+[4] J. Günther, H. Friedrich, I. Wald, H.-P. Seidel, and P. Slusallek. Ray tracing ani-
+mated scenes using motion decomposition. Computer Graphics Forum, 25(3):517–
+525, 2006. (Proceedings of Eurographics).
