@@ -34,14 +34,17 @@ kdtree可以使得ray tracing复杂度从$O(n)$减少到$O(logn)$.加速比率�
 >**SAH**( surface area heuristic)
 >SAH是一种概率模型，目标是找到最小化cost函数的分割点：
 >$$C(N)=\left\{\begin{matrix}C_{traversal}+p_l*C(N_l)+p_r*C(N_r)　for　inner　nodes\\C_{intersect}*|N|　for　leaf　nodes \end{matrix}\right.$$
+>
 >假设ray均匀分布，那么$p_l$,$p_r$等于ray通过父节点，且通过本节点的概率，使用几何概率进行计算，也就是包围盒的面积比上父节点包围盒的面积。
 >自顶向下构建近似地贪婪计算cost函数即可找到分割点。
 >使用SAH还可作为一个终结条件：
+>
 >$$Terminate(N)=\left\{\begin{matrix}true & minC(N)>|N|*C_{intersect}\\ false & otherwise\end{matrix}\right.$$
+
 
 # 构建KD-Tree
 
-自顶向下递归构建kdtree的算法复杂度为$O(nlogn)$($n+\frac{n}{2}+\frac{n}{2}+4* \frac{n}{4}$+..+n*\frac{n}{n}).
+自顶向下递归构建kdtree的算法复杂度为$O(nlogn)$($n+\frac{n}{2}+\frac{n}{2}+4* \frac{n}{4}$+..+n \frac{n}{n}).
 
 具体算法参考：
 ```cpp
@@ -266,7 +269,9 @@ static void build_kdtree(const RBAABB& bd, const std::vector<OLPBRGeometry*>& pr
   toparent->split_pos = best_point + bd.min[best_aixs];
 }
 ```
+上面实现，大部分代码在使用SAH寻找分割平面，为了使得整个kdtree分布在一块连续的内存中，并以便于后处理排序以及序列化，使用了`alloc_node`自定义分配内存。
 
+这种算法最大弊端在于每一次都要去扫描object来决定最终的分割面，
 
 # 参考文献
 
