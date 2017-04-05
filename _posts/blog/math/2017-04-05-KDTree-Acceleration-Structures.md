@@ -659,7 +659,7 @@ kdtree对于动态场景一般是重建。可以考虑使用采样SAH和binning 
 
 ## BVH
 
-解决动态场景最好的是使用BVH。
+解决动态场景最好的是使用BVH。【Real–time Ray Tracing of Dynamic Scenes 2.4.3】
 
 # 参考文献
 
