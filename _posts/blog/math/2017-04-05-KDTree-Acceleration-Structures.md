@@ -471,6 +471,179 @@ static void build_kdtree(const RBAABB& bd, const std::vector<OLPBRGeometry*>& pr
 
 ![](https://github.com/wubugui/FXXKTracer/raw/master/pic/kdtree_ray_insc.png)
 
+可以简单地使用递归来直接实现遍历：
+```cpp
+static bool intersection_res(const OLPBRRay& ray, const OLPBRKDTreeNode* node, OLPBRItersc* isc, const std::vector<OLPBRGeometry*>& prims)
+  {
+    
+    if (!node)
+    {
+      return false;
+    }
+
+    float tmin, tmax;
+    if (!node->bound.intersection(ray.o, ray.d, tmin, tmax))
+      return false;
+    if (node->leaf)
+    {
+      bool ret = false;
+      for (int i = 0; i < node->index.size();++i)
+      {
+        ret |= prims[node->index[i]]->intersect(ray, *isc);
+      }
+      return ret;
+    }
+    int axis = node->split_axis;
+    RBVector3 inv_dir(1.f / ray.d.x, 1.f / ray.d.y, 1.f / ray.d.z);
+    OLPBRKDTreeNode* first, *second;
+    float tplane = (node->split_pos - ray.o[axis])*inv_dir[axis];
+    if (inv_dir[axis] > 0)
+    {
+      if (tplane<=0)
+      {
+        first = node->right;
+        second = nullptr;
+      }
+      else
+      {
+        first = node->left;
+        second = node->right;
+      }
+    }
+    else
+    { 
+      if (tplane <= 0)
+      {
+        first = node->left;
+        second = nullptr;
+      }
+      else
+      {
+        first = node->right;
+        second = node->left;
+      }
+    }
+
+
+    //blow for debug
+   // if (first || second)
+    {
+      bool a = intersection_res(ray,first,isc,prims);
+      //如果包含了交点在aabb中才算，预防相交的交点不再本aabb中的情形
+      if (a) 
+      {
+        RBVector3 sp = ray.o + ray.d*(isc->dist_ - isc->epsilon_);
+		/*
+		也可以看上图
+		|    |   __B_     |
+		| A  |   |~~|     |
+		|____|___|__|___C_|
+		光线首先穿过Bound A与C平面相交，此时返回true，然而这个交点可能不是最近的，甚至可能根本不在Bound A中！
+		只要检测到的最近点一定满足：宿主object一定与A有交；一定是最近的点。
+		*/
+        if (first->bound.is_contain(sp))
+          return a;
+      }
+      bool b = intersection_res(ray,second, isc, prims);
+      return a||b;
+    }
+
+    //printf("kdtree intersc should not to be here!%d,%d\n",first,second);
+    //return false;
+  }
+```
+上述算法将 条件$t_{split}<t_{min}$ or $t_{split}>t_{max}$归纳为两个child都相交的情形，仅仅把$t_{split}<0$的情景记为仅相交一个child。这种归纳方案并不会有什么问题，只是相对低效一些。
+
+另外，上述算法做了提前的遍历终结，条件为相交的最近点包含在本bounding box中：
+```cpp
+      if (a) 
+      {
+        RBVector3 sp = ray.o + ray.d*(isc->dist_ - isc->epsilon_);
+        if (first->bound.is_contain(sp))
+          return a;
+      }
+```
+
+很多时候，递归由于函数自身的调用会产生很多问题，比如内存占用，函数call overhead，GPU不友好等等。
+
+所以通常会使用迭代算法来进行遍历，对于要访问两个child的情形，使用一个栈来储存第二个child一遍第一个访问完成后继续访问。
+
+```cpp
+#define MAX_TODON 64
+static bool intersection(const OLPBRRay& ray, const OLPBRKDTreeNode* tree, 
+OLPBRItersc *isc, const std::vector<OLPBRGeometry*>& prims)
+{
+  float tmin, tmax;
+  if (!tree) return false;
+  if (!tree->bound.intersection(ray.o, ray.d, tmin, tmax)) return false;
+  CHECK(tmin >= 0);
+  RBVector3 inv_dir(1.f / ray.d.x, 1.f / ray.d.y, 1.f / ray.d.z);
+  kd_todo_t todo[MAX_TODON];
+  int todo_pos = 0;
+  bool hit = false;
+  const OLPBRKDTreeNode*node = tree;
+  while (node != nullptr || todo_pos != 0)
+  {
+    if (ray.max_t < tmin) break;
+    //有可能某个节点是空节点，但是此时栈中依然有节点需要处理
+    if (!node)
+    {
+      --todo_pos;
+      node = todo[todo_pos].node;
+      tmin = todo[todo_pos].tmin;
+      tmax = todo[todo_pos].tmax;
+    }
+    if (!node)
+      continue;
+    if (!node->leaf)
+    {
+      int axis = node->split_axis;
+      float tplane = (node->split_pos - ray.o[axis])*inv_dir[axis];
+      const OLPBRKDTreeNode* first_child, *second_child;
+      int below_first = ((ray.o[axis] < node->split_pos) || (ray.o[axis] == node->split_pos&&ray.d[axis] <= 0));
+      if (below_first)
+      {
+        first_child = node->left;
+        second_child = node->right;
+      }
+      else
+      {
+        first_child = node->right;
+        second_child = node->left;
+      }
+      if (tplane > tmax || tplane <= 0) node = first_child;
+      else if (tplane < tmin) node = second_child;
+      else
+      {
+        todo[todo_pos].node = second_child;
+        todo[todo_pos].tmin = tplane;
+        todo[todo_pos].tmax = tmax;
+        ++todo_pos;
+        node = first_child;
+        tmax = tplane;
+      }
+    }
+    else
+      for (auto obj_i : node->index) hit |= prims[obj_i]->intersect(ray, *isc); 
+    if (todo_pos > 0)
+    {
+      --todo_pos;
+      node = todo[todo_pos].node;
+      tmin = todo[todo_pos].tmin;
+      tmax = todo[todo_pos].tmax;
+    }
+    else
+      break;
+  }
+  return hit;
+}
+```
+
+有一种更加GPU友好的遍历方法，使用一个“Rope”结构，使叶节点bounding box每一个面都指向与其相邻的包含所有节点的最小子树。这样就不需要一个附加的栈来记录遍历轨迹了。
+
+使用一个后期处理可以很简单地构建“Rope”，同时使用一个优化函数，将“Rope” push到最小的子树上去。
+
+
 
 
 # 参考文献
