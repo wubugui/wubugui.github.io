@@ -650,14 +650,20 @@ Rope等待实现...
 
 当ray表现出一些公共属性时，某些计算仅需要做一次，就可以在所有ray之间共享。这通常会用在同原点的ray相交测试primitive上。这时候可以将这些点使用SIMD同时遍历kdtree，算法上基本和单个ray遍历是一样的，但是要使用mask来屏蔽那些不需要结算的ray，注意这种方案在靠近root的地方很有效，会随着越来越远离root节点越来越分散而丢失其优点，在这种方案下必须所有的ray都找到交点后才能退出。
 
+# 动态场景
 
+kdtree对于动态场景一般是重建。可以考虑使用采样SAH和binning of primitives[3] 来提升重建效率。
 
 # 参考文献
 
-[1]C. Wächter and A. Keller. Instant Ray Tracing: The Bounding Interval Hierarchy.
+[1] C. Wächter and A. Keller. Instant Ray Tracing: The Bounding Interval Hierarchy.
 In T. Akenine-Möller and W. Heidrich, editors, Rendering Techniques 2006 (Proc. of
 17th Eurographics Symposium on Rendering), pages 139–149, 2006.
 
 [2] S. Woop, G. Marmitt, and P. Slusallek. B-KD trees for hardware accelerated ray
 tracing of dynamic scenes. In GH ’06: Proceedings of the 21st ACM SIGGRAPH/Eu-
 rographics symposium on Graphics hardware, pages 67–77. ACM, 2006.
+
+[3] S. Popov, J. Günther, H.-P. Seidel, and P. Slusallek. Experiences with streaming con-
+struction of SAH KD-trees. In Proceedings of the 2006 IEEE Symposium on Interac-
+tive Ray Tracing, pages 89–94. IEEE, 2006.
