@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "KD-Tree Acceleration Structures"
+title: "Acceleration Structures"
 modified:
 categories: blog
 excerpt:
@@ -12,9 +12,9 @@ date: 2017-04-05T08:13:52-03:10
 
 # 概述
 
-kdtree可以使得ray tracing复杂度从$O(n)$减少到$O(logn)$.加速比率是非常之高的，但是萦绕而来的有两大问题——高效的构建和高效的tracing，这两个问题必须平衡，以似的每一帧的渲染时间达到最小。
+Acceleration Structures可以使得ray tracing复杂度从$O(n)$减少到$O(logn)$.加速比率是非常之高的，但是萦绕而来的有两大问题——高效的构建和高效的tracing，这两个问题必须平衡，以似的每一帧的渲染时间达到最小。
 
-对于静态的场景，可以采用预先构建并且储存kdtree的方案来削减kdtree构建的时间，从而每一帧的渲染时间取决于kdtree的遍历。但是对于动态场景来说，几乎每一帧都会有object的移动或者变形，每次操作都将会导致kdtree无效化，以至于必须花时间去处理kdtree。
+对于静态的场景，可以采用预先构建并且储存Acceleration Structures的方案来削减Acceleration Structures构建的时间，从而每一帧的渲染时间取决于Acceleration Structures的遍历。但是对于动态场景来说，几乎每一帧都会有object的移动或者变形，每次操作都将会导致Acceleration Structures无效化，以至于必须花时间去处理Acceleration Structures。
 
 
 有两种划分方法——按照空间划分和按照object划分。
@@ -643,7 +643,7 @@ OLPBRItersc *isc, const std::vector<OLPBRGeometry*>& prims)
 
 使用一个后期处理可以很简单地构建“Rope”，同时使用一个优化函数，将“Rope” push到最小的子树上去。
 
-...
+Rope等待实现...
 
 当ray表现出一些公共属性时，某些计算仅需要做一次，就可以在所有ray之间共享。这通常会用在同原点的ray相交测试primitive上。这时候可以将这些点使用SIMD同时遍历kdtree，算法上基本和单个ray遍历是一样的，但是要使用mask来屏蔽那些不需要结算的ray，注意这种方案在靠近root的地方很有效，会随着越来越远离root节点越来越分散而丢失其优点，在这种方案下必须所有的ray都找到交点后才能退出。
 
