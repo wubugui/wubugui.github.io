@@ -1065,11 +1065,11 @@ end
 
 假设有m个examples.
 - 选择一些n个有可能异常的features $x_i$
-- 估计出每个feature的高斯分布参数$\mu_1,...,\mu_n,\sigma_1^2,...,\sigma_n^%2$
+- 估计出每个feature的高斯分布参数$\mu_1,...,\mu_n,\sigma_1^2,...,\sigma_n^2$
   $$\mu_i = \frac{1}{m}\sum_{i=1}^m x_j^{(i)}$$
   $$\sigma_j^2=\frac{1}{m}\sum_{i=1}^m(x_j^{(i)}-\mu_j)^2$$
 - 对于一个新的exmaple对于给定的对应features，可以计算$p(x)$:
-  $$p(x)=\mul_{j=1}^n p(x_j;\mu_j,\sigma_j^2)=\mul_{i=1}^n\frac{1}{\sqrt{2\pi}\sigma_j}e^{-\frac{(x_j-\mu_j)^2}{2\sigma_j^2}}$$
+  $$p(x)=\prod_{j=1}^n p(x_j;\mu_j,\sigma_j^2)=\prod_{i=1}^n\frac{1}{\sqrt{2\pi}\sigma_j}e^{-\frac{(x_j-\mu_j)^2}{2\sigma_j^2}}$$
   如果$p(x)<\epsilon$则检测到异常.
   
   
