@@ -1121,7 +1121,7 @@ end
 同时计算所有的$\theta$
 优化目标为（加上正则化term防止最优化结果过大）：
 
-$$min_{\theta^{(1)},...,\theta^{(n_u)}}\frac{1}{2}\sum_{j=1}^{n_u}\sum_{i:r(i,j)=1}((\theta^{(j)})^T x^{(i)}-y^{(i,j)})^2+\frac{\lambda}{2}\sum_{j=1}^{n_u}\sum_{k=1}^n(\theta_k^{(j)}^2$$
+$$min_1{\theta^{(1)},...,\theta^{(n_u)}}\frac{1}{2}\sum_{j=1}^{n_u}\sum_{i:r(i,j)=1}((\theta^{(j)})^Tx^{(i)}-y^{(i,j)})^2+\frac{\lambda}{2}\sum_{j=1}^{n_u}\sum_{k=1}^n(\theta_k^{(j)})^2$$
 
 梯度下降：
 
@@ -1143,10 +1143,23 @@ $$\theta_k^{(j)}:=\theta_k^{(j)}-\alpha \sum_{i:r(i,j)=1}((\theta^{(j)})^Tx^(i)-
 
 Cost函数：
 
-$$J(x^{(1)},...,x^{(n_m)},\theta^{(1),...,\theta^{(n_u)}})=\frac{1}{2}\sum_{(i,j):r(i,j)=1}((\theta^{(j)})^Tx^{(i)}-y^{(i,j)})^2+\frac{\lambda}{2}\sum_{i=1}^{n_m}\sum_{k=1}^n(x_k^{(i)}^2)+\frac{\lambda}{2}\sum_{i=1}^{n_m}\sum_{k=1}^n(\theta_k^{(i)}^2)$$
+$$J(x^{(1)},...,x^{(n_m)},\theta^{(1),...,\theta^{(n_u)}})=\frac{1}{2}\sum_{(i,j):r(i,j)=1}((\theta^{(j)})^Tx^{(i)}-y^{(i,j)})^2+\frac{\lambda}{2}\sum_{i=1}^{n_m}\sum_{k=1}^n(x_k^{(i)}^2)+\frac{\lambda}{2}\sum_{i=1}^{n_m}\sum_{k=1}^n(\theta_k^{(i)})^2)$$
 
-最小化cost求参数$x&\theta$即可。
+最小化cost求参数$x$/$\theta$即可。
 
+**算法**
+
+-   随机初始化$x$和$\theta$
+-   最小化J
+-   对于用户$\theta^{(j)}$和电影$x^{(i)}$，使用$\theta^{(j)}^Tx^{(i)}$计算评分
+
+#### 找出相关电影
+
+最小化特征权的距离。
+
+#### 实现细节：Mean Normalization
+
+给每部电影计算用户平均分，然后原始分减去平均分，再使用此进行协同过滤学习，最后在使用最小化结果计算用户对某部电影评分的时候加上这个平均分，这样就可以避免没有评价过电影的用户（$\theta$全是0）,得到一个全0的评分（这样的评分没有意义）。
 
   
 # Ref
