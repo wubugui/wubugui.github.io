@@ -1143,7 +1143,7 @@ $$\theta_k^{(j)}:=\theta_k^{(j)}-\alpha \sum_{i:r(i,j)=1}((\theta^{(j)})^Tx^(i)-
 
 Cost函数：
 
-$$J(x^{(1)},...,x^{(n_m)},\theta^{(1),...,\theta^{(n_u)}})=\frac{1}{2}\sum_{(i,j):r(i,j)=1}((\theta^{(j)})^Tx^{(i)}-y^{(i,j)})^2+\frac{\lambda}{2}\sum_{i=1}^{n_m}\sum_{k=1}^n(x_k^{(i)}^2)+\frac{\lambda}{2}\sum_{i=1}^{n_m}\sum_{k=1}^n(\theta_k^{(i)})^2)$$
+$$J(x^{(1)},...,x^{(n_m)},\theta^{(1),...,\theta^{(n_u)}})=\frac{1}{2}\sum_{(i,j):r(i,j)=1}((\theta^{(j)})^Tx^{(i)}-y^{(i,j)})^2+\frac{\lambda}{2}\sum_{i=1}^{n_m}\sum_{k=1}^n(x_k^{(i)})^2+\frac{\lambda}{2}\sum_{i=1}^{n_m}\sum_{k=1}^n(\theta_k^{(i)})^2$$
 
 最小化cost求参数$x$/$\theta$即可。
 
