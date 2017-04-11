@@ -60,12 +60,17 @@ $$\theta_i = \theta_i – \alpha\sum\limits_{j=0}^{m}(h_\theta(x_0^{j}, x_1^{j},
 
 ### Stochastic Gradient Descent（SGD）
 
-随机选择样本j：
+随机梯度下降法，其实和批量梯度下降法原理类似，区别在与求梯度时没有用所有的m个样本的数据，而是仅仅选取一个样本j来求梯度。对应的更新公式是：
+
 $$\theta_i = \theta_i – \alpha h_\theta(x_0^{j}, x_1^{j}, …x_n^{j}) – y_j)x_i^{j}$$
+
+随机梯度下降法，和批量梯度下降法是两个极端，一个采用所有数据来梯度下降，一个用一个样本来梯度下降。自然各自的优缺点都非常突出。对于训练速度来说，随机梯度下降法由于每次仅仅采用一个样本来迭代，训练速度很快，而批量梯度下降法在样本量很大的时候，训练速度不能让人满意。对于准确度来说，随机梯度下降法用于仅仅用一个样本决定梯度方向，导致解很有可能不是最优。对于收敛速度来说，由于随机梯度下降法一次迭代一个样本，导致迭代方向变化很大，不能很快的收敛到局部最优解。
+
+小批量梯度下降法是一个中庸的办法能够结合两种方法的优点。
 
 ### Mini-batch Gradient Descent（MBGD）
 
-此变种调和了BGD和SGD矛盾，得到了更加中庸的方法，也就是对于m个样本，我们采用k个样子来迭代，1<k<m。一般可以取x=10，当然根据样本的数据，可以调整这个x的值。对应的更新公式是：
+此变种调和了BGD和SGD矛盾，得到了更加中庸的方法，也就是对于m个样本，我们采用k个样子来迭代，1<k<m。一般可以取x=10（2~100），当然根据样本的数据，可以调整这个x的值。对应的更新公式是：
 $$\theta_i = \theta_i – \alpha \sum\limits_{j=t}^{t_k-1}(h_\theta(x_0^{j}, x_1^{j}, …x_n^{j}) – y_j)x_i^{j}$$
 
 
@@ -1151,7 +1156,7 @@ $$J(x^{(1)},...,x^{(n_m)},\theta^{(1),...,\theta^{(n_u)}})=\frac{1}{2}\sum_{(i,j
 
 -   随机初始化$x$和$\theta$
 -   最小化J
--   对于用户$\theta^{(j)}$和电影$x^{(i)}$，使用$\theta^{(j)}^Tx^{(i)}$计算评分
+-   对于用户$\theta^{(j)}$和电影$x^{(i)}$，使用$\theta^{(j)}^T x^{(i)}$计算评分
 
 #### 找出相关电影
 
@@ -1161,7 +1166,481 @@ $$J(x^{(1)},...,x^{(n_m)},\theta^{(1),...,\theta^{(n_u)}})=\frac{1}{2}\sum_{(i,j
 
 给每部电影计算用户平均分，然后原始分减去平均分，再使用此进行协同过滤学习，最后在使用最小化结果计算用户对某部电影评分的时候加上这个平均分，这样就可以避免没有评价过电影的用户（$\theta$全是0）,得到一个全0的评分（这样的评分没有意义）。
 
+#### 实现
+
+**基本测试**
+
+```matlab
+%% Initialization
+clear ; close all; clc
+
+%% ================== Part 1: Load Example Dataset  ===================
+%  We start this exercise by using a small dataset that is easy to
+%  visualize.
+%
+%  Our example case consists of 2 network server statistics across
+%  several machines: the latency and throughput of each machine.
+%  This exercise will help us find possibly faulty (or very fast) machines.
+%
+
+fprintf('Visualizing example dataset for outlier detection.\n\n');
+
+%  The following command loads the dataset. You should now have the
+%  variables X, Xval, yval in your environment
+load('ex8data1.mat');
+
+%  Visualize the example dataset
+plot(X(:, 1), X(:, 2), 'bx');
+axis([0 30 0 30]);
+xlabel('Latency (ms)');
+ylabel('Throughput (mb/s)');
+
+fprintf('Program paused. Press enter to continue.\n');
+pause
+
+
+%% ================== Part 2: Estimate the dataset statistics ===================
+%  For this exercise, we assume a Gaussian distribution for the dataset.
+%
+%  We first estimate the parameters of our assumed Gaussian distribution, 
+%  then compute the probabilities for each of the points and then visualize 
+%  both the overall distribution and where each of the points falls in 
+%  terms of that distribution.
+%
+fprintf('Visualizing Gaussian fit.\n\n');
+
+%  Estimate my and sigma2
+[mu sigma2] = estimateGaussian(X);
+
+%  Returns the density of the multivariate normal at each data point (row) 
+%  of X
+p = multivariateGaussian(X, mu, sigma2);
+
+%  Visualize the fit
+visualizeFit(X,  mu, sigma2);
+xlabel('Latency (ms)');
+ylabel('Throughput (mb/s)');
+
+fprintf('Program paused. Press enter to continue.\n');
+pause;
+```
+
+**协同过滤与推荐系统**
+
+```matlab
+%% =============== Part 1: Loading movie ratings dataset ================
+%  You will start by loading the movie ratings dataset to understand the
+%  structure of the data.
+%  
+fprintf('Loading movie ratings dataset.\n\n');
+
+%  Load data
+load ('ex8_movies.mat');
+
+%  Y is a 1682x943 matrix, containing ratings (1-5) of 1682 movies on 
+%  943 users
+%
+%  R is a 1682x943 matrix, where R(i,j) = 1 if and only if user j gave a
+%  rating to movie i
+
+%  From the matrix, we can compute statistics like average rating.
+fprintf('Average rating for movie 1 (Toy Story): %f / 5\n\n', ...
+        mean(Y(1, R(1, :))));
+
+%  We can "visualize" the ratings matrix by plotting it with imagesc
+imagesc(Y);
+ylabel('Movies');
+xlabel('Users');
+
+fprintf('\nProgram paused. Press enter to continue.\n');
+pause;
+
+%% ============ Part 2: Collaborative Filtering Cost Function ===========
+%  You will now implement the cost function for collaborative filtering.
+%  To help you debug your cost function, we have included set of weights
+%  that we trained on that. Specifically, you should complete the code in 
+%  cofiCostFunc.m to return J.
+
+%  Load pre-trained weights (X, Theta, num_users, num_movies, num_features)
+load ('ex8_movieParams.mat');
+
+%  Reduce the data set size so that this runs faster
+num_users = 4; num_movies = 5; num_features = 3;
+X = X(1:num_movies, 1:num_features);
+Theta = Theta(1:num_users, 1:num_features);
+Y = Y(1:num_movies, 1:num_users);
+R = R(1:num_movies, 1:num_users);
+
+%  Evaluate cost function
+J = cofiCostFunc([X(:) ; Theta(:)], Y, R, num_users, num_movies, ...
+               num_features, 0);
+           
+fprintf(['Cost at loaded parameters: %f '...
+         '\n(this value should be about 22.22)\n'], J);
+
+fprintf('\nProgram paused. Press enter to continue.\n');
+pause;
+
+
+%% ============== Part 3: Collaborative Filtering Gradient ==============
+%  Once your cost function matches up with ours, you should now implement 
+%  the collaborative filtering gradient function. Specifically, you should 
+%  complete the code in cofiCostFunc.m to return the grad argument.
+%  
+fprintf('\nChecking Gradients (without regularization) ... \n');
+
+%  Check gradients by running checkNNGradients
+checkCostFunction;
+
+fprintf('\nProgram paused. Press enter to continue.\n');
+pause;
+
+
+%% ========= Part 4: Collaborative Filtering Cost Regularization ========
+%  Now, you should implement regularization for the cost function for 
+%  collaborative filtering. You can implement it by adding the cost of
+%  regularization to the original cost computation.
+%  
+
+%  Evaluate cost function
+J = cofiCostFunc([X(:) ; Theta(:)], Y, R, num_users, num_movies, ...
+               num_features, 1.5);
+           
+fprintf(['Cost at loaded parameters (lambda = 1.5): %f '...
+         '\n(this value should be about 31.34)\n'], J);
+
+fprintf('\nProgram paused. Press enter to continue.\n');
+pause;
+
+
+%% ======= Part 5: Collaborative Filtering Gradient Regularization ======
+%  Once your cost matches up with ours, you should proceed to implement 
+%  regularization for the gradient. 
+%
+
+%  
+fprintf('\nChecking Gradients (with regularization) ... \n');
+
+%  Check gradients by running checkNNGradients
+checkCostFunction(1.5);
+
+fprintf('\nProgram paused. Press enter to continue.\n');
+pause;
+
+
+%% ============== Part 6: Entering ratings for a new user ===============
+%  Before we will train the collaborative filtering model, we will first
+%  add ratings that correspond to a new user that we just observed. This
+%  part of the code will also allow you to put in your own ratings for the
+%  movies in our dataset!
+%
+movieList = loadMovieList();
+
+%  Initialize my ratings
+my_ratings = zeros(1682, 1);
+
+% Check the file movie_idx.txt for id of each movie in our dataset
+% For example, Toy Story (1995) has ID 1, so to rate it "4", you can set
+my_ratings(1) = 4;
+
+% Or suppose did not enjoy Silence of the Lambs (1991), you can set
+my_ratings(98) = 2;
+
+% We have selected a few movies we liked / did not like and the ratings we
+% gave are as follows:
+my_ratings(7) = 3;
+my_ratings(12)= 5;
+my_ratings(54) = 4;
+my_ratings(64)= 5;
+my_ratings(66)= 3;
+my_ratings(69) = 5;
+my_ratings(183) = 4;
+my_ratings(226) = 5;
+my_ratings(355)= 5;
+
+fprintf('\n\nNew user ratings:\n');
+for i = 1:length(my_ratings)
+    if my_ratings(i) > 0 
+        fprintf('Rated %d for %s\n', my_ratings(i), ...
+                 movieList{i});
+    end
+end
+
+fprintf('\nProgram paused. Press enter to continue.\n');
+pause;
+
+
+%% ================== Part 7: Learning Movie Ratings ====================
+%  Now, you will train the collaborative filtering model on a movie rating 
+%  dataset of 1682 movies and 943 users
+%
+
+fprintf('\nTraining collaborative filtering...\n');
+
+%  Load data
+load('ex8_movies.mat');
+
+%  Y is a 1682x943 matrix, containing ratings (1-5) of 1682 movies by 
+%  943 users
+%
+%  R is a 1682x943 matrix, where R(i,j) = 1 if and only if user j gave a
+%  rating to movie i
+
+%  Add our own ratings to the data matrix
+Y = [my_ratings Y];
+R = [(my_ratings ~= 0) R];
+
+%  Normalize Ratings
+[Ynorm, Ymean] = normalizeRatings(Y, R);
+
+%  Useful Values
+num_users = size(Y, 2);
+num_movies = size(Y, 1);
+num_features = 10;
+
+% Set Initial Parameters (Theta, X)
+X = randn(num_movies, num_features);
+Theta = randn(num_users, num_features);
+
+initial_parameters = [X(:); Theta(:)];
+
+% Set options for fmincg
+options = optimset('GradObj', 'on', 'MaxIter', 100);
+
+% Set Regularization
+lambda = 10;
+theta = fmincg (@(t)(cofiCostFunc(t, Ynorm, R, num_users, num_movies, ...
+                                num_features, lambda)), ...
+                initial_parameters, options);
+
+% Unfold the returned theta back into U and W
+X = reshape(theta(1:num_movies*num_features), num_movies, num_features);
+Theta = reshape(theta(num_movies*num_features+1:end), ...
+                num_users, num_features);
+
+fprintf('Recommender system learning completed.\n');
+
+fprintf('\nProgram paused. Press enter to continue.\n');
+pause;
+
+%% ================== Part 8: Recommendation for you ====================
+%  After training the model, you can now make recommendations by computing
+%  the predictions matrix.
+%
+
+p = X * Theta';
+my_predictions = p(:,1) + Ymean;
+
+movieList = loadMovieList();
+
+[r, ix] = sort(my_predictions, 'descend');
+fprintf('\nTop recommendations for you:\n');
+for i=1:10
+    j = ix(i);
+    fprintf('Predicting rating %.1f for movie %s\n', my_predictions(j), ...
+            movieList{j});
+end
+
+fprintf('\n\nOriginal ratings provided:\n');
+for i = 1:length(my_ratings)
+    if my_ratings(i) > 0 
+        fprintf('Rated %d for %s\n', my_ratings(i), ...
+                 movieList{i});
+    end
+end
+
+```
+
+```matlab
+function [bestEpsilon bestF1] = selectThreshold(yval, pval)
+%SELECTTHRESHOLD Find the best threshold (epsilon) to use for selecting
+%outliers
+%   [bestEpsilon bestF1] = SELECTTHRESHOLD(yval, pval) finds the best
+%   threshold to use for selecting outliers based on the results from a
+%   validation set (pval) and the ground truth (yval).
+%
+
+bestEpsilon = 0;
+bestF1 = 0;
+F1 = 0;
+
+stepsize = (max(pval) - min(pval)) / 1000;
+for epsilon = min(pval):stepsize:max(pval)
+    
+    % ====================== YOUR CODE HERE ======================
+    % Instructions: Compute the F1 score of choosing epsilon as the
+    %               threshold and place the value in F1. The code at the
+    %               end of the loop will compare the F1 score for this
+    %               choice of epsilon and set it to be the best epsilon if
+    %               it is better than the current choice of epsilon.
+    %               
+    % Note: You can use predictions = (pval < epsilon) to get a binary vector
+    %       of 0's and 1's of the outlier predictions
+
+
+predictions = (pval < epsilon);
+
+
+
+tp = sum((predictions==1)&(yval==1));
+fp = sum((predictions==1)&(yval==0));
+fn = sum((predictions==0)&(yval==1));
+
+
+prec = tp/(tp+fp);
+rec = tp/(tp+fn);
+
+F1 = 2*prec*rec/(prec+rec);
+
+
+
+
+
+    % =============================================================
+
+    if F1 > bestF1
+       bestF1 = F1;
+       bestEpsilon = epsilon;
+    end
+end
+
+end
+
+
+```
+
+```matlab
+function [J, grad] = cofiCostFunc(params, Y, R, num_users, num_movies, ...
+                                  num_features, lambda)
+%COFICOSTFUNC Collaborative filtering cost function
+%   [J, grad] = COFICOSTFUNC(params, Y, R, num_users, num_movies, ...
+%   num_features, lambda) returns the cost and gradient for the
+%   collaborative filtering problem.
+%
+
+% Unfold the U and W matrices from params
+X = reshape(params(1:num_movies*num_features), num_movies, num_features);
+Theta = reshape(params(num_movies*num_features+1:end), ...
+                num_users, num_features);
+
+            
+% You need to return the following values correctly
+J = 0;
+X_grad = zeros(size(X));
+Theta_grad = zeros(size(Theta));
+
+% ====================== YOUR CODE HERE ======================
+% Instructions: Compute the cost function and gradient for collaborative
+%               filtering. Concretely, you should first implement the cost
+%               function (without regularization) and make sure it is
+%               matches our costs. After that, you should implement the 
+%               gradient and use the checkCostFunction routine to check
+%               that the gradient is correct. Finally, you should implement
+%               regularization.
+%
+% Notes: X - num_movies  x num_features matrix of movie features
+%        Theta - num_users  x num_features matrix of user features
+%        Y - num_movies x num_users matrix of user ratings of movies
+%        R - num_movies x num_users matrix, where R(i, j) = 1 if the 
+%            i-th movie was rated by the j-th user
+%
+% You should set the following variables correctly:
+%
+%        X_grad - num_movies x num_features matrix, containing the 
+%                 partial derivatives w.r.t. to each element of X
+%        Theta_grad - num_users x num_features matrix, containing the 
+%                     partial derivatives w.r.t. to each element of Theta
+%
+
+
+M = X*Theta'- Y;
+T = M.*M;
+J = sum(T(R==1))/2;
+
+%regularized
+l1 = 0;
+for i=1:num_users
+    for j=1:num_features
+       l1=l1+Theta(i,j)*Theta(i,j);
+    end
+end
+l1 = l1*0.5*lambda;
+
+l2 = 0;
+for i=1:num_movies
+    for j=1:num_features
+       l2=l2+X(i,j)*X(i,j);
+    end
+end
+l2 = l2*0.5*lambda;
+
+J = J + l1 + l2;
+        
+
+for i=1:num_movies
+    idx = find(R(i,:)==1);
+    tt = Theta(idx,:);
+    yt = Y(i,idx);
+    X_grad(i,:) = (X(i,:)*tt'-yt)*tt + lambda*X(i,:);
+end
+
+
+for i=1:num_users
+    idx = find(R(:,i)==1);
+    xt = X(idx,:);
+    yt = Y(idx,i);
+    %theta 1*f
+    %theta_g u*f
+    %xt idx*f
+    %yt = idx*1
+    Theta_grad(i,:) = (xt*Theta(i,:)'-yt)'*xt + lambda*Theta(i,:);
+end
+
+
+
+% =============================================================
+
+grad = [X_grad(:); Theta_grad(:)];
+
+end
+
+```
+
+```matlab
+function [mu sigma2] = estimateGaussian(X)
+%ESTIMATEGAUSSIAN This function estimates the parameters of a 
+%Gaussian distribution using the data in X
+%   [mu sigma2] = estimateGaussian(X), 
+%   The input X is the dataset with each n-dimensional data point in one row
+%   The output is an n-dimensional vector mu, the mean of the data set
+%   and the variances sigma^2, an n x 1 vector
+% 
+
+% Useful variables
+[m, n] = size(X);
+
+% You should return these values correctly
+mu = zeros(n, 1);
+sigma2 = zeros(n, 1);
+
+for i = 1:n
+    mu(i) = sum(X(:,i))/m;
+    K = X(:,i)-mu(i);
+    sigma2(i) = K'*K/m;
+end
+% =============================================================
+end
+```
+
+
+# 课程总结
+
+-   监督学习：线性回归，逻辑回归，神经网络，支持向量机
+-   无监督学习：K-means，PCA，异常检测
+-   特殊应用：推荐系统，大规模机器学习
+-   构建机器学习系统的建议：偏与方差，规则化，决定接下来做什么工作，评估机器学习算法，学习曲线，误差分析，ceiling分析。
   
+
 # Ref
 -  [https://www.coursera.org/learn/machine-learning](https://www.coursera.org/learn/machine-learning)
 -  [http://www.52ml.net/20615.html](http://www.52ml.net/20615.html)
