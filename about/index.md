@@ -9,7 +9,7 @@ image:
   creditlink:
 ---
 
-<font face="幼园">Growth in wisdom may be exactlyi measured by decrease in bitterness.</font> 
+<font face="幼园">Growth in wisdom may be exactly measured by decrease in bitterness.</font> 
   　　　　　　　　　　　　　　　　　　　　　　　    　　　　　　　　![](https://github.com/wubugui/FXXKTracer/raw/master/pic/Friedrich_Nietzsche_Signature.svg.png)
   
 -----------------------------
