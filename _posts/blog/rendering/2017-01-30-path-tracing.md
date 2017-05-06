@@ -122,12 +122,31 @@ $$L(p1 \rightarrow p_0) = \sum_{n=1}^{\infty}P(\bar{p_n})$$
 
 另外一个实现上的技巧是，观察原式，可以发现：$fG$是递增的，也就是说，前一term有的因子，后面也有，如果可以把先前的因子计算了保留下来，并强行假设这些保留的因子是随机，不想干的，那么就需要每个term都算一次了，可以一次性从头到尾都算完，代价只是增大一点点方差而已。
 
-值得一说的是，最终的方案将PT的计算简化为主要是一个throughput的计算：
+值得一说的是，最终的方案将PT的计算简化为主要是一个throughput的计算:
 
 $$\frac{L_e(p_i->p_{i-1})f(p_i->p_{i-1}->p_{i-2})G(p_i->p_{i-1})}{p_A(p_i)}(
 \prod_{j=1}^{i-2}\frac{f(p_{j+1}->p_j->p_{j-1})|\cos\theta_j|}{p_{\omega}(p_{j+1}-p_j)})$$
 
 注意后面连乘项的分母，因为上下的$G$都被约掉了，所以只剩下一个solid angle measure的pdf，这为实现带来了方便（BDPT中因为要对path使用MIS要求每个顶点都记录面积measure的pdf，这要求知道前后两个顶点来计算面积measure的pdf，实现比PT更复杂一些）.
+
+>这里为了把事情说得透彻以免以后进一步学习出现疑惑，必须要注意以下几个事实：
+>
+>1.  pt中的path是采样path，原则上可以在场景中任意选择点，连接成path。
+>
+>2.  **使用面积形式计算的时候，采样每一条path所使用的pdf分布必须都是面积measure的，也就是说，在某个点去采样一个半球来作为一个pdf是错误的。**
+>
+>3.  注意pdf从solid angle measure转换到面积measure时，实际上说的是，**顶点i**的solid采样pdf转换成了**顶点i+1**的面积采样pdf，也就是：
+>
+>$$p_A(p_{i+1})=p_w(p_{j+1}\leftarrow p_j)\frac{|cos\theta|}{||p_j-p_{j+1}||^2}$$
+>
+>-  于是throughput为化简前的形式应该是(注意顶点下标):
+>
+>   $$\frac{L_e(p_i\rightarrow p_{i-1})f(p_i \rightarrow p_{i-1}\rightarrow p_{i-2})G(p_i\rightarrow p_{i-1})}{p_A(p_i)}(
+\prod_{j=1}^{i-2}\frac{f(p_{j+1}\rightarrow p_j\rightarrow p_{j-1})G(p_{j+1},p_j)}{p_A(p_{j+1})})$$
+>
+>-  其中采样点$p_1$是相机发射的第一根ray与场景的交点，位置确定不需要采样，所以从$p_2$开始采样，采样概率密度为$p_A(p_{j+1})$
+>
+>-  这一点也是面积形式(eg.pt积分器)和solid角形式(eg.直接光积分器)的显著差别，实现形式上看起来差不多，可能容易想当然把前后混淆，但这一点区别在双向方法中将会有更清晰。
 
 ## Next-Event Estimation
 
