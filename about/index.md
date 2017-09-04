@@ -53,6 +53,31 @@ image:
 |:------------: | :------ |
 | [![]({{ site.url }}/images/ui.png)](https://github.com/wubugui/OfxSimpleUI) |　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　It's a Simple User Interface system library for Openframeworks. I created it for creating the ui for a little project so it is simple enough but not strong. |
 
+## Some real-time demos
+
+| | |
+|:------------: | :------ |
+| [![]({{ site.url }}/images/cloud.jpg)]() |　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　景观云与物理天穹. 天空使用大气散射模拟实现，云使用噪声模拟，参考了游戏《Horizon：Zero Dawn》的方法。天空和云的渲染均采用Ray March。DirectX11实现。 |
+
+
+| | |
+|:------------: | :------ |
+| [![]({{ site.url }}/images/ds.jpg)]() |　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　延迟着色. 基于物理着色，HDR渲染，128点光源。DirectX11实现。 |
+
+
+
+| | |
+|:------------: | :------ |
+| [![]({{ site.url }}/images/pbr.jpg)]() |　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　基于物理着色. 高光F/G/D = Schlick/Smith/GGX,参考UE4.漫反射brdf：Lambert，采用了预积分irradiance map作为IBL源。渲染采用了延迟着色。DirectX11实现。 |
+
+
+| | |
+|:------------: | :------ |
+| [![]({{ site.url }}/images/svo.jpg)]() |　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　体素化SVO. 512X512X512体素化分辨率，128M体素链表，256MSVO结点，64M Brick Pool。 |
+
+
+
+-----------------------------
 
 
 
