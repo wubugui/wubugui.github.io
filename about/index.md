@@ -9,22 +9,52 @@ image:
   creditlink:
 ---
 
+
 <font face="幼园">Growth in wisdom may be exactly measured by decrease in bitterness.</font> 
   　　　　　　　　　　　　　　　　　　　　　　　    　　　　　　　　![](https://github.com/wubugui/FXXKTracer/raw/master/pic/Friedrich_Nietzsche_Signature.svg.png)
   
 -----------------------------
 
-<div align="center">
-　　豫章故郡，洪都新府。星分翼轸，地接衡庐。襟三江而带五湖，控蛮荆而引瓯越。物华天宝，龙光射牛斗之墟；人杰地灵，徐孺下陈蕃之榻。雄州雾列，俊采星驰。台隍枕夷夏之交，宾主尽东南之美。都督阎公之雅望，棨戟遥临；宇文新州之懿范，襜帷暂驻。十旬休假，胜友如云；千里逢迎，高朋满座。腾蛟起凤，孟学士之词宗；紫电青霜，王将军之武库。家君作宰，路出名区；童子何知，躬逢胜饯。</div><div align="center">
-　　时维九月，序属三秋。潦水尽而寒潭清，烟光凝而暮山紫。俨骖騑于上路，访风景于崇阿；临帝子之长洲，得天人之旧馆。层峦耸翠，上出重霄；飞阁流丹，下临无地。鹤汀凫渚，穷岛屿之萦回；桂殿兰宫，即冈峦之体势。</div><div align="center">
-　　披绣闼，俯雕甍，山原旷其盈视，川泽纡其骇瞩。闾阎扑地，钟鸣鼎食之家；舸舰迷津，青雀黄龙之舳。云销雨霁，彩彻区明。落霞与孤鹜齐飞，秋水共长天一色。渔舟唱晚，响穷彭蠡之滨；雁阵惊寒，声断衡阳之浦。</div><div align="center">
-　　遥襟甫畅，逸兴遄飞。爽籁发而清风生，纤歌凝而白云遏。睢园绿竹，气凌彭泽之樽；邺水朱华，光照临川之笔。四美具，二难并。穷睇眄于中天，极娱游于暇日。天高地迥，觉宇宙之无穷；兴尽悲来，识盈虚之有数。望长安于日下，目吴会于云间。地势极而南溟深，天柱高而北辰远。关山难越，谁悲失路之人？萍水相逢，尽是他乡之客。怀帝阍而不见，奉宣室以何年？</div><div align="center">
-　　嗟乎！时运不齐，命途多舛。冯唐易老，李广难封。屈贾谊于长沙，非无圣主；窜梁鸿于海曲，岂乏明时？所赖君子见机，达人知命。老当益壮，宁移白首之心？穷且益坚，不坠青云之志。酌贪泉而觉爽，处涸辙以犹欢。北海虽赊，扶摇可接；东隅已逝，桑榆非晚。孟尝高洁，空余报国之情；阮籍猖狂，岂效穷途之哭！</div>
+# Personal Projects
+
+| | |
+|:------------: | :------ |
+| [![]({{ site.url }}/images/renderer.png)](https://github.com/wubugui/Tracer-Editor) |   C++实现的基于物理的离线渲染器，简单实现了几种基本bsdf以及disney brdf，GI算法包括Path Tracing、Direct Lighting、IGI、SPPM、Path Space Regularization等.IMGUI实现的场景编辑器，以方便快捷地编辑材质并进行渲染。 |
 
 
+----------------------------
 
------------------------------
+| | |
+|:------------: | :------ |
+| [![]({{ site.url }}/images/wipr.png)](https://github.com/wubugui/WIPReborn) |   C++实现的玩具级2D游戏引擎，本科大作业的延续和重构，基本全部重写了所有系统，采用事件驱动，并增强了拓展性和可用性，目前正在尝试使用它复刻《仙剑奇侠传1》。|
 
+----------------------------
+
+| | |
+|:------------: | :------ |
+| [![]({{ site.url }}/images/ocean.png)](https://github.com/wubugui/Jerry-Tessendorf-2004) |   主要参考Jerry-Tessendorf-2004的方法模拟深海海面。C++/OpenGL3.X实现，采用PS实现二维GPU FFT，并使用基于统计的波谱函数作为模拟源模拟海面。 |
+
+----------------------------
+
+| | |
+|:------------: | :------ |
+| [![]({{ site.url }}/images/softr.png)](https://github.com/wubugui/SoftR) |   C++实现的软件三角网络光栅化渲染器，采用线扫算法光栅化三角形，从功能上模拟了硬件GPU管线，目前依然在加入新功能和优化。 |
+
+----------------------------
+
+| | |
+|:------------: | :------ |
+| [![]({{ site.url }}/images/reyes.png)](https://github.com/wubugui/OpenLit) |   Renderman类渲染器的初步实现，渲染器核心使用C++编写，采用了Reyes算法实现了Object order的渲染，支持displacement Shader、surface shader等着色器着色，并尝试向其中加入了PBR方法。 |
+
+----------------------------
+
+
+| | |
+|:------------: | :------ |
+| [![]({{ site.url }}/images/ui.png)](https://github.com/wubugui/OfxSimpleUI) |   It's a Simple User Interface system library for Openframeworks. I created it for creating the ui for a little project so it is simple enough but not strong. |
+
+
+----------------------------
 
 <div align="center">
 <img src="{{ site.url }}/images/5128941.jpg" alt="image">
