@@ -19,7 +19,7 @@ image:
 
 | | |
 |:------------: | :------ |
-| [![]({{ site.url }}/images/renderer.png)](https://github.com/wubugui/Tracer-Editor) |C++实现的基于物理的离线渲染器，简单实现了几种基本bsdf以及disney brdf，GI算法包括Path Tracing、Direct Lighting、IGI、SPPM、Path Space Regularization等.IMGUI实现的场景编辑器，以方便快捷地编辑材质并进行渲染。 |
+| [![]({{ site.url }}/images/renderer.png)](https://github.com/wubugui/Tracer-Editor) |　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　C++实现的基于物理的离线渲染器，简单实现了几种基本bsdf以及disney brdf，GI算法包括Path Tracing、Direct Lighting、IGI、SPPM、Path Space Regularization等.IMGUI实现的场景编辑器，以方便快捷地编辑材质并进行渲染。 |
 
 
 ----------------------------
