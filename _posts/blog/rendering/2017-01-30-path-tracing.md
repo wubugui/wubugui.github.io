@@ -156,7 +156,7 @@ $$\frac{L_e(p_i->p_{i-1})f(p_i->p_{i-1}->p_{i-2})G(p_i->p_{i-1})}{p_A(p_i)}(
 
 最后使用上述方案，可以渲染出下列图像：
 
-![](https://github.com/wubugui/FXXKTracer/raw/master/pic/mat1.png)
+![](https://github.com/wubugui/FXXKTracer/raw/master/pic/newpic/cup1.png)
 
 # 补充
 
