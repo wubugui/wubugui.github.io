@@ -73,7 +73,7 @@ image:
 
 | | |
 |:------------: | :------ |
-| [![]({{ site.url }}/images/svo.jpg)]() |　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　体素化SVO. 512X512X512体素化分辨率，128M体素链表，256MSVO结点，64M Brick Pool。 |
+| [![]({{ site.url }}/images/svo.png)]() |　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　体素化SVO. 512X512X512体素化分辨率，128M体素链表，256MSVO结点，64M Brick Pool。 |
 
 
 
