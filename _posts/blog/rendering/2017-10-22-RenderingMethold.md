@@ -1023,17 +1023,25 @@ float4 PsMain(VOut input) : SV_TARGET
 
 首先算新的顶点：
 
+
 ![](https://dl.dropboxusercontent.com/s/wg8gtj39erxg0uy/baohsoushiyitu1.png)
 
-$\frac{k_1·n_1}{|n_1|^2}·n_1 = n_1$->$\frac{|k_1|cos < k_1,n_1 > }{|n_1|}=1$->$ k_1=\frac{-e_2}{|e_2|}|k_1|=\frac{-e_2}{|e_2|}\frac{|n_1|}{cos< k_1,n_1>}$->$k_1=\frac{-e_2l}{|e_2|cos <-e_2,\frac{n_1}{|n_1|}>} = \frac{e_2l}{e_2·\frac{n_1}{|n_1|}}$
+
+$$\frac{k_1·n_1}{|n_1|^2}·n_1 = n_1$$->
+
+$$\frac{|k_1|cos < k_1,n_1 > }{|n_1|}=1$$->
+
+$$ k_1=\frac{-e_2}{|e_2|}|k_1|=\frac{-e_2}{|e_2|}\frac{|n_1|}{cos< k_1,n_1>}$$->
+
+$$k_1=\frac{-e_2l}{|e_2|cos <-e_2,\frac{n_1}{|n_1|}>} = \frac{e_2l}{e_2·\frac{n_1}{|n_1|}}$$
 
 同理：
 
-$k_2=\frac{e_1l}{e_1·\frac{n_2}{|n_2|}}$
+$$k_2=\frac{e_1l}{e_1·\frac{n_2}{|n_2|}}$$
 
 因为$k_1,k_2$所夹四边形为菱形，所以：
 
-$v' = v + k_1+k_2 = v + l(\frac{e_1}{e_1·\frac{n_2}{|n_2|}}+ \frac{e_2}{e_2·\frac{n_1}{|n_1|}})$
+$$v' = v + k_1+k_2 = v + l(\frac{e_1}{e_1·\frac{n_2}{|n_2|}}+ \frac{e_2}{e_2·\frac{n_1}{|n_1|}})$$
 
 还有种比较巧的方法是使用齐次坐标用空间平面法线叉乘来计算新的顶点，参考GPU Gem 2。
 
